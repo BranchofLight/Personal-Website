@@ -1,8 +1,0 @@
-new WOW().init();
-
-$(".project-icon").addClass("wow fadeInDown");
-
-$(window).on("load", function() {
-    $("#loading").fadeOut("slow");
-    
-});
