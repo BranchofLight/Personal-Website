@@ -2,23 +2,25 @@
 
 html,
 body {
-    /*background-color: #0F1626;*/
-    background-color: #fff;
-    font-family: 'Raleway', sans-serif;
-    letter-spacing: -0.04em;
-    font-size: 1em;
-    color: #000;
-    overflow: hidden;
+  height: 100%;
+  /*background-color: #0F1626;*/
+  background-color: #fff;
+  font-family: 'Raleway', sans-serif;
+  letter-spacing: -0.04em;
+  font-size: 1em;
+  color: #000;
+  overflow: hidden;
 }
 
 body {
-    padding-bottom: 50px;
-    overflow-x: hidden;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
-footer {
-    text-align: center;
-    padding: 20px 20px 20px 20px;
+a, a:hover {
+  color: inherit;
 }
 
 /* Jumbotron Formatting */
@@ -52,7 +54,7 @@ h2 {
 
 }
 
-.pink-syntax { 
+.pink-syntax {
     color: #E91E63;
 }
 
@@ -90,6 +92,10 @@ h2 {
 .jumbotron {
     margin-bottom: 0px;
     background: #fff;
+}
+
+.jumbotron .container {
+  display: inline-block;
 }
 
 .jumbotron p {
@@ -168,7 +174,7 @@ h2 {
     background-color: none;
     color: #fff;
     text-transform: uppercase;
-    padding: 10px;   
+    padding: 10px;
     border-bottom: 3px ridge #0F1626;
     margin-top: 10px;
 }
@@ -178,7 +184,7 @@ h2 {
 }
 
 /* Media Queerying*/
-/* Custom, iPhone Retina */ 
+/* Custom, iPhone Retina */
 @media only screen and (min-width : 320px) {
     #main-jumbotron h1 {
         font-size: 1.3em;
@@ -189,7 +195,7 @@ h2 {
     }
 }
 
-/* Extra Small Devices, Phones */ 
+/* Extra Small Devices, Phones */
 @media only screen and (min-width : 480px) {
     #main-jumbotron h1 {
         font-size: 1.6em;
@@ -218,4 +224,16 @@ h2 {
 
 /* Large Devices, Wide Screens */
 @media only screen and (min-width : 1200px) {
+}
+
+@media (min-width: 1200px) {
+  .container {
+    width: 1000px;
+  }
+}
+
+@media (min-width: 992px) {
+  .container {
+    width: 1000px;
+  }
 }
