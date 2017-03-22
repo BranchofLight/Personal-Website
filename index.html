@@ -23,9 +23,8 @@
         margin: 0;
       }
       main {
-      }
-      div > div {
-        padding-left: 60px;
+        max-width: 100%;
+        max-height: 100%;
       }
       .pink-syntax {
         color: #E91E63;
@@ -51,11 +50,34 @@
       a, a:hover {
         color: inherit;
       }
-      main > .line {
-        font-size: 36px;
+
+      /* smartphones, portrait iPhone, portrait 480x320 phones (Android) */
+      @media (min-width:320px)  {
+        main > .line {
+          font-size: 18px;
+        }
+        .line {
+          font-size: 14px;
+        }
+        div > div {
+          padding-left: 30px;
+        }
       }
-      .line {
-        font-size: 28px;
+      @media (min-width:480px)  { /* smartphones, Android phones, landscape iPhone */ }
+      @media (min-width:600px)  { /* portrait tablets, portrait iPad, e-readers (Nook/Kindle), landscape 800x480 phones (Android) */ }
+      @media (min-width:801px)  { /* tablet, landscape iPad, lo-res laptops ands desktops */ }
+      @media (min-width:1025px) { /* big landscape tablets, laptops, and desktops */ }
+      /* hi-res laptops and desktops */
+      @media (min-width:1281px) {
+        main > .line {
+          font-size: 36px;
+        }
+        .line {
+          font-size: 28px;
+        }
+        div > div {
+          padding-left: 60px;
+        }
       }
     </style>
   </head>
