@@ -24,11 +24,16 @@ body {
 .content {
   display: table-cell;
   vertical-align: middle;
+
+  overflow: hidden;
 }
 
 .console {
-  width: 950px;
-  height: 700px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+
+  width: 70%;
+  height: 90%;
   background-color: rgba(19, 49, 92, 0.61);
   border-radius: 15px;
   box-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
@@ -38,7 +43,7 @@ body {
 }
 
 .command {
-  color: #E2C044;
+  color: #E2C044 !important;
 }
 
 .link {

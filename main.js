@@ -1,6 +1,11 @@
 /**
  * TODO:
- * Scrollbar <- I have jquery + nicescroll installed
+ * Add first span that contains only "> "
+ * -> have to then change how valueSpan works (also change name to firstSpan)
+ *    -> no longer has to worry about "too many backspaces or deletes"
+ *    -> can remove "> " from usrCode as well
+ *    -> this should allow highlighting the word and not "> "
+ * Fix cursor positioning on resize
  * Invisible caret demo: https://jsfiddle.net/smzpf9h6/
  * Add terminal functionality (tail - links and .txt, cd - maybe gimmick directory, ls)
  *                            -> create custom scrollbar for console
@@ -12,7 +17,7 @@
  * -> the new input, not noticeably a different one, then handles text normally
  * -> if backsapce is pressed on new input when value.length = 0 then delete it and go to previous
  * -> Example code: https://jsfiddle.net/m4revkoy/1/
- * Animate console opening
+ * Animate console opening (optional, if necessary)
  * Screen size support
  *    -> maximum character length for commands may change
  *    -> text size
@@ -177,6 +182,7 @@ var writeSiteText = function(index, callback) {
         }, lineDelay);
       });
     }
+    document.querySelector('.console').scrollTop = document.querySelector('.console').scrollHeight;
   } else {
     callback();
   }
@@ -213,32 +219,59 @@ writeSiteText(0, function() {
   valueSpan.disabled = true;
   valueSpan.innerHTML = ">&nbsp";
 
+  var secondSpan = document.createElement('span');
+  secondSpan.classList.add('value-span');
+  secondSpan.setAttribute('contentEditable', true);
+  secondSpan.setAttribute('spellcheck', false);
+  secondSpan.disabled = true;
+
+  var spanToWrite = valueSpan;
+
   var invalidKeys = [
     'ArrowRight', 'ArrowLeft', 'Delete',
   ];
   usrCode.addEventListener('keydown', function(e) {
+    console.log(usrCode.innerText);
     if (invalidKeys.indexOf(e.key) > -1) {
       e.preventDefault();
     } else if (e.target.innerText.length === 2 && e.key === 'Backspace') {
       e.preventDefault();
-    } else if (e.target.innerText.length >= 90 && e.key !== 'Backspace') {
+    } else if (valueSpan.offsetWidth >= document.querySelector('.console').offsetWidth*0.9 && e.key !== 'Backspace') {
       e.preventDefault();
+    } else if (spanToWrite === secondSpan && secondSpan.innerText.length === 0 && e.key === 'Backspace') {
+      spanToWrite = valueSpan;
+      valueSpan.classList.remove('command');
     }
   });
 
   // cat will be alias for tail
   // sudo will ask for pw, none will work
   // wget simply attempts to open the URL in a new tab
+  // ls prints out directory again
+  // git followed by anything opens my github
   var validCommands = [
-    'sudo', 'tail', 'cat', 'cd', 'ls', 'wget'
+    'sudo', 'tail', 'cat', 'cd', 'ls', 'wget', 'git'
   ];
   // These commands are valid, but throw an error
   var disabledCommands = [
-    'rm', 'mkdir', 'ssh', 'git', 'telnet'
+    'rm', 'mkdir', 'ssh', 'telnet'
   ];
-  usrCode.addEventListener('input', function(e) {
-    if (validCommands.indexOf(e.target.innerText.substring(2)) > -1) {
 
+  usrCode.addEventListener('input', function(e) {
+    var visibleLength = valueSpan.innerText.length + secondSpan.innerText.length;
+    if (visibleLength > usrCode.innerText.length) {
+      // Remove last character
+      spanToWrite.innerText = spanToWrite.innerText.substring(0, spanToWrite.innerText.length-1);
+    } else {
+      // Add newest character
+      spanToWrite.innerText += usrCode.innerText[usrCode.innerText.length-1];
+    }
+
+    if (validCommands.indexOf(usrCode.innerText.substring(2)) > -1) {
+    	valueSpan.classList.add('command');
+
+      // Change visible span to write to
+      spanToWrite = secondSpan;
     }
 
     // Stops the caret animation while typing
@@ -247,7 +280,6 @@ writeSiteText(0, function() {
       // Starts it again after typing
       document.querySelector('.caret').classList.add('active-caret');
     }, 250);
-    valueSpan.innerText = usrCode.innerText;
   });
 
   // Create our custom caret
@@ -274,22 +306,44 @@ writeSiteText(0, function() {
   });
 
   document.querySelector('.console').appendChild(valueSpan);
+  document.querySelector('.console').appendChild(secondSpan);
   document.querySelector('.console').appendChild(usrCode);
   document.querySelector('.console').appendChild(caret);
 
-  var rect = usrCode.getBoundingClientRect();
-  caret.style.top = rect.top + rect.height - 2 + "px";
+  var positionInput = function() {
+    var rect = valueSpan.getBoundingClientRect();
+
+    caret.style.top = rect.top + rect.height - 4 + "px";
+    usrCode.style.top = rect.top + "px";
+    usrCode.style.left = rect.left + "px";
+  };
+
+  document.querySelector('.console').scrollTop = document.querySelector('.console').scrollHeight;
+
+  // As resizing can greatly affect the formatting of input, clear input on resize
   resizeFunctions.push(function() {
-    rect = usrCode.getBoundingClientRect();
-    caret.style.top = rect.top + rect.height - 2 + "px";
+    valueSpan.innerHTML = ">&nbsp";
+    usrCode.innerHTML = ">&nbsp";
+    secondSpan.innerText = "";
+    spanToWrite = valueSpan;
+
+    placeCaretAtEnd(usrCode);
+    // Must be after previous code
+    positionInput();
+  });
+
+  document.querySelector('.console').addEventListener('scroll', function(e) {
+    var scrollMax = e.target.scrollHeight - e.target.offsetHeight;
+    // parseInt rounds down
+    if (parseInt(e.target.scrollTop) >= scrollMax) {
+      caret.style.visibility = "visible";
+      positionInput();
+    } else {
+      caret.style.visibility = "hidden";
+    }
   });
 
   placeCaretAtEnd(usrCode);
-});
 
-var initScroll = function() {
-  $('.console').niceScroll({cursorcolor:"#5D737E"});
-  document.querySelector('.console').addEventListener('scroll', function(e) {
-    console.log(e.detail);
-  });
-}();
+  positionInput();
+});
