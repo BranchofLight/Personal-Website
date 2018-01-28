@@ -64,15 +64,16 @@ body {
 }
 
 .value-span {
-  margin-left: 15px;
+  margin-left: 0;
+
   background-color: transparent;
 
   outline: none;
   border: none;
+}
 
-  font-size: 20px;
-  font-family: 'Ubuntu Mono', monospace;
-  color: #EEF4ED;
+.value-span + .value-span {
+  margin-left: 5px;
 }
 
 .user-code {

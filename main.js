@@ -1,11 +1,8 @@
 /**
  * TODO:
- * Add first span that contains only "> "
- * -> have to then change how valueSpan works (also change name to firstSpan)
- *    -> no longer has to worry about "too many backspaces or deletes"
- *    -> can remove "> " from usrCode as well
- *    -> this should allow highlighting the word and not "> "
- * Fix cursor positioning on resize
+ * Make commands -> options work
+ * -> Handle Enter press
+ * -> Errors, successes, general(?)
  * Invisible caret demo: https://jsfiddle.net/smzpf9h6/
  * Add terminal functionality (tail - links and .txt, cd - maybe gimmick directory, ls)
  *                            -> create custom scrollbar for console
@@ -207,25 +204,29 @@ var placeCaretAtEnd = function(el) {
 }
 
 writeSiteText(0, function() {
+  var symbolSpan = document.createElement('span');
+  symbolSpan.classList.add('text');
+  symbolSpan.innerHTML = ">&nbsp";
+
   var usrCode = document.createElement('span');
   usrCode.classList.add('user-code');
   usrCode.setAttribute('contenteditable', true);
-  usrCode.innerHTML = ">&nbsp";
 
-  var valueSpan = document.createElement('span');
-  valueSpan.classList.add('value-span');
-  valueSpan.setAttribute('contenteditable', true);
-  valueSpan.setAttribute('spellcheck', false);
-  valueSpan.disabled = true;
-  valueSpan.innerHTML = ">&nbsp";
+  var commandSpan = document.createElement('span');
+  commandSpan.classList.add('value-span');
+  commandSpan.classList.add('text');
+  commandSpan.setAttribute('contenteditable', true);
+  commandSpan.setAttribute('spellcheck', false);
+  commandSpan.disabled = true;
 
-  var secondSpan = document.createElement('span');
-  secondSpan.classList.add('value-span');
-  secondSpan.setAttribute('contentEditable', true);
-  secondSpan.setAttribute('spellcheck', false);
-  secondSpan.disabled = true;
+  var optionsSpan = document.createElement('span');
+  optionsSpan.classList.add('value-span');
+  optionsSpan.classList.add('text');
+  optionsSpan.setAttribute('contentEditable', true);
+  optionsSpan.setAttribute('spellcheck', false);
+  optionsSpan.disabled = true;
 
-  var spanToWrite = valueSpan;
+  var spanToDraw = commandSpan;
 
   var invalidKeys = [
     'ArrowRight', 'ArrowLeft', 'Delete',
@@ -234,13 +235,11 @@ writeSiteText(0, function() {
     console.log(usrCode.innerText);
     if (invalidKeys.indexOf(e.key) > -1) {
       e.preventDefault();
-    } else if (e.target.innerText.length === 2 && e.key === 'Backspace') {
+    } else if (symbolSpan.offsetWidth + commandSpan.offsetWidth + optionsSpan.offsetWidth >= document.querySelector('.console').offsetWidth*0.9 && e.key !== 'Backspace') {
       e.preventDefault();
-    } else if (valueSpan.offsetWidth >= document.querySelector('.console').offsetWidth*0.9 && e.key !== 'Backspace') {
-      e.preventDefault();
-    } else if (spanToWrite === secondSpan && secondSpan.innerText.length === 0 && e.key === 'Backspace') {
-      spanToWrite = valueSpan;
-      valueSpan.classList.remove('command');
+    } else if (spanToDraw === optionsSpan && optionsSpan.innerText.length === 0 && e.key === 'Backspace') {
+      spanToDraw = commandSpan;
+      commandSpan.classList.remove('command');
     }
   });
 
@@ -258,20 +257,20 @@ writeSiteText(0, function() {
   ];
 
   usrCode.addEventListener('input', function(e) {
-    var visibleLength = valueSpan.innerText.length + secondSpan.innerText.length;
+    var visibleLength = commandSpan.innerText.length + optionsSpan.innerText.length;
     if (visibleLength > usrCode.innerText.length) {
       // Remove last character
-      spanToWrite.innerText = spanToWrite.innerText.substring(0, spanToWrite.innerText.length-1);
+      spanToDraw.innerText = spanToDraw.innerText.substring(0, spanToDraw.innerText.length-1);
     } else {
       // Add newest character
-      spanToWrite.innerText += usrCode.innerText[usrCode.innerText.length-1];
+      spanToDraw.innerText += usrCode.innerText[usrCode.innerText.length-1];
     }
 
-    if (validCommands.indexOf(usrCode.innerText.substring(2)) > -1) {
-    	valueSpan.classList.add('command');
+    if (validCommands.indexOf(usrCode.innerText) > -1 && spanToDraw === commandSpan) {
+    	commandSpan.classList.add('command');
 
       // Change visible span to write to
-      spanToWrite = secondSpan;
+      spanToDraw = optionsSpan;
     }
 
     // Stops the caret animation while typing
@@ -305,13 +304,14 @@ writeSiteText(0, function() {
     placeCaretAtEnd(usrCode);
   });
 
-  document.querySelector('.console').appendChild(valueSpan);
-  document.querySelector('.console').appendChild(secondSpan);
+  document.querySelector('.console').appendChild(symbolSpan);
+  document.querySelector('.console').appendChild(commandSpan);
+  document.querySelector('.console').appendChild(optionsSpan);
   document.querySelector('.console').appendChild(usrCode);
   document.querySelector('.console').appendChild(caret);
 
   var positionInput = function() {
-    var rect = valueSpan.getBoundingClientRect();
+    var rect = commandSpan.getBoundingClientRect();
 
     caret.style.top = rect.top + rect.height - 4 + "px";
     usrCode.style.top = rect.top + "px";
@@ -320,30 +320,37 @@ writeSiteText(0, function() {
 
   document.querySelector('.console').scrollTop = document.querySelector('.console').scrollHeight;
 
-  // As resizing can greatly affect the formatting of input, clear input on resize
   resizeFunctions.push(function() {
-    valueSpan.innerHTML = ">&nbsp";
-    usrCode.innerHTML = ">&nbsp";
-    secondSpan.innerText = "";
-    spanToWrite = valueSpan;
-
-    placeCaretAtEnd(usrCode);
-    // Must be after previous code
-    positionInput();
+    while (symbolSpan.offsetWidth + commandSpan.offsetWidth + optionsSpan.offsetWidth >= document.querySelector('.console').offsetWidth*0.9) {
+      usrCode.innerText = usrCode.innerText.substring(0, usrCode.innerText.length-1);
+      if (optionsSpan.innerText.length > 0) {
+        optionsSpan.innerText = optionsSpan.innerText.substring(0, optionsSpan.innerText.length-1);
+      } else {
+        commandSpan.innerText = commandSpan.innerText.substring(0, commandSpan.innerText.length-1);
+      }
+    }
   });
 
-  document.querySelector('.console').addEventListener('scroll', function(e) {
-    var scrollMax = e.target.scrollHeight - e.target.offsetHeight;
-    // parseInt rounds down
-    if (parseInt(e.target.scrollTop) >= scrollMax) {
+  var caretScrollCheck = function() {
+    var scrollMax = document.querySelector('.console').scrollHeight - document.querySelector('.console').offsetHeight;
+    // parseInt rounds down -- still need the negative padding on scroll max
+    if (parseInt(document.querySelector('.console').scrollTop) >= scrollMax*0.98) {
       caret.style.visibility = "visible";
+      placeCaretAtEnd(usrCode);
       positionInput();
     } else {
       caret.style.visibility = "hidden";
     }
+  }
+
+  resizeFunctions.push(function() {
+    caretScrollCheck();
   });
 
-  placeCaretAtEnd(usrCode);
+  document.querySelector('.console').addEventListener('scroll', function() {
+    caretScrollCheck();
+  });
 
-  positionInput();
+  // Should be scrolled down at this point, but check anyway
+  caretScrollCheck();
 });
