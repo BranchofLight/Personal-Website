@@ -283,13 +283,6 @@ writeSiteText(0, function() {
     'ArrowRight', 'ArrowLeft', 'Delete',
   ];
 
-  var onSpaceBar = function() {
-    commandSpan.classList.add('command');
-
-    // Change visible span to write to
-    spanToDraw = optionsSpan;
-  };
-
   usrCode.addEventListener('keydown', function(e) {
     console.log(usrCode.innerText);
     if (invalidKeys.indexOf(e.key) > -1) {
@@ -307,14 +300,10 @@ writeSiteText(0, function() {
       spanToDraw = commandSpan;
       commandSpan.classList.remove('command');
     } else if (e.key === ' ' && (validCommands.indexOf(usrCode.innerText) > -1 || disabledCommands.indexOf(usrCode.innerText) > -1) && spanToDraw === commandSpan) {
-      onSpaceBar();
-    }
-  });
+      commandSpan.classList.add('command');
 
-  // For Android spacebars
-  usrCode.addEventListener('textInput', function(e) {
-    if (e.originalEvent.data.charCodeAt(0) === ' ' && (validCommands.indexOf(usrCode.innerText) > -1 || disabledCommands.indexOf(usrCode.innerText) > -1) && spanToDraw === commandSpan) {
-      onSpaceBar();
+      // Change visible span to write to
+      spanToDraw = optionsSpan;
     }
   });
 
