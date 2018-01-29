@@ -82,7 +82,7 @@ var portfolioText = 'I am a recent Computer Science graduate of Carleton Univers
 var siteText = [
   "> <span class=\"command\">cd</span> '.\\scott-andrechek\\'",
   "> <span class=\"command\">tail</span> 'portfolio.txt'",
-  "<span class=\"hyphenate\">" + portfolioText + "</span>",
+  "<span class=\"text portfolio\">" + portfolioText + "</span>",
   "> <span class=\"command\">ls</span>",
   "<span class=\"command\">Directory: root:\\scott-andrechek</span>",
   "Name                    Description",
@@ -249,14 +249,14 @@ writeSiteText(0, function() {
 
     commandSpan.classList.add('value-span');
     commandSpan.classList.add('text');
-    commandSpan.setAttribute('contenteditable', true);
+    // commandSpan.setAttribute('contenteditable', true);
     commandSpan.setAttribute('spellcheck', false);
     commandSpan.disabled = true;
     commandSpan.innerText = "";
 
     optionsSpan.classList.add('value-span');
     optionsSpan.classList.add('text');
-    optionsSpan.setAttribute('contentEditable', true);
+    // optionsSpan.setAttribute('contentEditable', true);
     optionsSpan.setAttribute('spellcheck', false);
     optionsSpan.disabled = true;
     optionsSpan.innerText = "";
@@ -393,7 +393,7 @@ writeSiteText(0, function() {
 
           writeCommandsTxt(0, newLine);
         } else if (options === 'portfolio.txt') {
-          addTextToConsole('<span class=\"hyphenate\">' + portfolioText + '</span>');
+          addTextToConsole('<span class=\"text portfolio\">' + portfolioText + '</span>');
           newLine();
         } else {
           var url = "";

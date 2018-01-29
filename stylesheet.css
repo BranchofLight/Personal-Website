@@ -63,6 +63,10 @@ body {
   padding-top: 15px;
 }
 
+.portfolio {
+  margin-left: 0 !important;
+}
+
 .error {
   color: #F04341;
   font-weight: bold;
