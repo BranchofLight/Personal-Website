@@ -72,10 +72,6 @@ body {
   border: none;
 }
 
-.value-span + .value-span {
-  margin-left: 5px;
-}
-
 .user-code {
   position: absolute;
   opacity: 0;

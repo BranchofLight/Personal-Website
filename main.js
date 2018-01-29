@@ -1,19 +1,8 @@
 /**
  * TODO:
  * Make commands -> options work
- * -> Handle Enter press
  * -> Errors, successes, general(?)
- * Invisible caret demo: https://jsfiddle.net/smzpf9h6/
- * Add terminal functionality (tail - links and .txt, cd - maybe gimmick directory, ls)
- *                            -> create custom scrollbar for console
- *                            -> rm triggers a warning for admin
- *                            -> sudo asks for password, none work
- * TERMINAL TIP: to highlight just the command word attempt the following
- * -> when a valid command word is entered add coloring
- * -> then shrink input to size of word, and add another input adjacent to this
- * -> the new input, not noticeably a different one, then handles text normally
- * -> if backsapce is pressed on new input when value.length = 0 then delete it and go to previous
- * -> Example code: https://jsfiddle.net/m4revkoy/1/
+ * Favicon
  * Animate console opening (optional, if necessary)
  * Screen size support
  *    -> maximum character length for commands may change
@@ -201,45 +190,75 @@ var placeCaretAtEnd = function(el) {
       textRange.collapse(false);
       textRange.select();
   }
+
+  document.querySelector('.console').scrollTop = document.querySelector('.console').scrollHeight;
 }
 
 writeSiteText(0, function() {
-  var symbolSpan = document.createElement('span');
-  symbolSpan.classList.add('text');
-  symbolSpan.innerHTML = ">&nbsp";
-
+  var inputDiv;
+  var symbolSpan;
   var usrCode = document.createElement('span');
+  var commandSpan;
+  var optionsSpan;
+
   usrCode.classList.add('user-code');
   usrCode.setAttribute('contenteditable', true);
+  usrCode.innerText = "";
 
-  var commandSpan = document.createElement('span');
-  commandSpan.classList.add('value-span');
-  commandSpan.classList.add('text');
-  commandSpan.setAttribute('contenteditable', true);
-  commandSpan.setAttribute('spellcheck', false);
-  commandSpan.disabled = true;
+  var createSpans = function() {
+    inputDiv = document.createElement('div');
+    symbolSpan = document.createElement('span');
+    commandSpan = document.createElement('span');
+    optionsSpan = document.createElement('span');
 
-  var optionsSpan = document.createElement('span');
-  optionsSpan.classList.add('value-span');
-  optionsSpan.classList.add('text');
-  optionsSpan.setAttribute('contentEditable', true);
-  optionsSpan.setAttribute('spellcheck', false);
-  optionsSpan.disabled = true;
+    symbolSpan.classList.add('text');
+    symbolSpan.innerHTML = ">&nbsp";
+
+    commandSpan.classList.add('value-span');
+    commandSpan.classList.add('text');
+    commandSpan.setAttribute('contenteditable', true);
+    commandSpan.setAttribute('spellcheck', false);
+    commandSpan.disabled = true;
+    commandSpan.innerText = "";
+
+    optionsSpan.classList.add('value-span');
+    optionsSpan.classList.add('text');
+    optionsSpan.setAttribute('contentEditable', true);
+    optionsSpan.setAttribute('spellcheck', false);
+    optionsSpan.disabled = true;
+    optionsSpan.innerText = "";
+
+    inputDiv.appendChild(symbolSpan);
+    inputDiv.appendChild(commandSpan);
+    inputDiv.appendChild(optionsSpan);
+  };
+
+  createSpans();
 
   var spanToDraw = commandSpan;
 
   var invalidKeys = [
     'ArrowRight', 'ArrowLeft', 'Delete',
   ];
+
   usrCode.addEventListener('keydown', function(e) {
     console.log(usrCode.innerText);
     if (invalidKeys.indexOf(e.key) > -1) {
       e.preventDefault();
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      invokeCommand();
+      positionInput();
     } else if (symbolSpan.offsetWidth + commandSpan.offsetWidth + optionsSpan.offsetWidth >= document.querySelector('.console').offsetWidth*0.9 && e.key !== 'Backspace') {
       e.preventDefault();
     } else if (spanToDraw === optionsSpan && optionsSpan.innerText.length === 0 && e.key === 'Backspace') {
       spanToDraw = commandSpan;
       commandSpan.classList.remove('command');
+    } else if (e.key === ' ' && (validCommands.indexOf(usrCode.innerText) > -1 || disabledCommands.indexOf(usrCode.innerText) > -1) && spanToDraw === commandSpan) {
+      commandSpan.classList.add('command');
+
+      // Change visible span to write to
+      spanToDraw = optionsSpan;
     }
   });
 
@@ -253,8 +272,32 @@ writeSiteText(0, function() {
   ];
   // These commands are valid, but throw an error
   var disabledCommands = [
-    'rm', 'mkdir', 'ssh', 'telnet'
+    'rm', 'mkdir', 'ssh', 'mount', 'unmount'
   ];
+
+  // Do commands (if any)
+  // Flush spans
+  // New line
+  var invokeCommand = function() {
+    var c = document.querySelector('.console');
+    c.appendChild(document.createElement('br'));
+    createSpans();
+
+    c.appendChild(inputDiv);
+
+    document.querySelector('.console').scrollTop = document.querySelector('.console').scrollHeight;
+
+    spanToDraw = commandSpan;
+
+    usrCode.innerText = "";
+
+    positionInput();
+  };
+
+  // Create our custom caret
+  var caret = document.createElement('div');
+  caret.classList.add('caret');
+  caret.classList.add('active-caret');
 
   usrCode.addEventListener('input', function(e) {
     var visibleLength = commandSpan.innerText.length + optionsSpan.innerText.length;
@@ -266,25 +309,15 @@ writeSiteText(0, function() {
       spanToDraw.innerText += usrCode.innerText[usrCode.innerText.length-1];
     }
 
-    if (validCommands.indexOf(usrCode.innerText) > -1 && spanToDraw === commandSpan) {
-    	commandSpan.classList.add('command');
-
-      // Change visible span to write to
-      spanToDraw = optionsSpan;
-    }
+    positionCaretX();
 
     // Stops the caret animation while typing
-    document.querySelector('.caret').classList.remove('active-caret');
+    caret.classList.remove('active-caret');
     setTimeout(function() {
       // Starts it again after typing
-      document.querySelector('.caret').classList.add('active-caret');
+      caret.classList.add('active-caret');
     }, 250);
   });
-
-  // Create our custom caret
-  var caret = document.createElement('div');
-  caret.classList.add('caret');
-  caret.classList.add('active-caret');
 
   // These listeners make sure user cannot go behind the space or caret
   usrCode.addEventListener('focus', function(e) {
@@ -304,18 +337,22 @@ writeSiteText(0, function() {
     placeCaretAtEnd(usrCode);
   });
 
-  document.querySelector('.console').appendChild(symbolSpan);
-  document.querySelector('.console').appendChild(commandSpan);
-  document.querySelector('.console').appendChild(optionsSpan);
+  document.querySelector('.console').appendChild(inputDiv);
   document.querySelector('.console').appendChild(usrCode);
   document.querySelector('.console').appendChild(caret);
 
   var positionInput = function() {
     var rect = commandSpan.getBoundingClientRect();
 
-    caret.style.top = rect.top + rect.height - 4 + "px";
     usrCode.style.top = rect.top + "px";
     usrCode.style.left = rect.left + "px";
+    caret.style.top = rect.top + rect.height - 4 + "px";
+    positionCaretX();
+  };
+
+  var positionCaretX = function() {
+    var rect = optionsSpan.getBoundingClientRect();
+    caret.style.left = rect.right + "px";
   };
 
   document.querySelector('.console').scrollTop = document.querySelector('.console').scrollHeight;
