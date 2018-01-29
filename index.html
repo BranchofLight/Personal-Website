@@ -1,169 +1,20 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3">
     <meta charset="utf-8">
+    <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono" rel="stylesheet">
+    <link href="./stylesheet.css" rel="stylesheet" type="text/css"></link>
     <title>Scott Andrechek</title>
-    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
-    <link rel="icon" href="favicon.ico" type="image/x-icon">
-    <style>
-      html {
-        font-family: "Helvetica";
-        font-weight: bold;
-      }
-      html, body {
-        height: 100%;
-      }
-      body {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        padding: 0;
-        margin: 0;
-      }
-      main {
-        max-width: 95%;
-        max-height: 95%;
-      }
-      .pink-syntax {
-        color: #E91E63;
-      }
-      .blue-syntax {
-        color: #3F51B5;
-      }
-      .green-syntax {
-        color: #009688;
-      }
-      .light-blue-syntax {
-        color: #3582ff;
-      }
-      .dark-blue-syntax {
-        color: #0B54A5;
-      }
-      .syntax {
-        color: black;
-      }
-      a {
-        text-decoration: none;
-      }
-      a:hover {
-        text-decoration: underline;
-      }
-      a, a:hover {
-        color: inherit;
-      }
-
-      /* smartphones, portrait iPhone, portrait 480x320 phones (Android) */
-      @media (min-width:320px)  {
-        main > .line {
-          font-size: 14px;
-        }
-        .line {
-          font-size: 10px;
-        }
-        div > div {
-          padding-left: 20px;
-        }
-      }
-
-      /* portrait tablets, portrait iPad, e-readers (Nook/Kindle), landscape 800x480 phones (Android) */
-      @media (min-width:600px)  {
-        main > .line {
-          font-size: 22px;
-        }
-        .line {
-          font-size: 17px;
-        }
-        div > div {
-          padding-left: 40px;
-        }
-      }
-
-      /* hi-res laptops and desktops */
-      @media (min-width:1281px) {
-        main > .line {
-          font-size: 36px;
-        }
-        .line {
-          font-size: 28px;
-        }
-        div > div {
-          padding-left: 60px;
-        }
-      }
-    </style>
   </head>
   <body>
-    <main>
-      <div class="line"><span class="pink-syntax">var</span> <span class="dark-blue-syntax">scottAndrechek</span> = {
-        <div class="line">personal: {
-          <div class="line">likes: [<span class="green-syntax">"programming"</span>, <span class="green-syntax">"music"</span>, <span class="green-syntax">"hockey"</span>, <span class="green-syntax">"creating"</span>],</div>
-          <div class="line">wheelchair: <span class="blue-syntax">true</span>,</div>
-        },</div>
-        <div class="line">professional: {
-          <div class="line">github: <span class="green-syntax">"<a href="https://www.github.com/BranchOfLight" target="_blank">www.github.com/BranchOfLight</a>"</span>,</div>
-          <div class="line">linkedIn: <span class="green-syntax">"<a href="https://www.linkedin.com/in/scott-andrechek-bb132b12b/" target="_blank">linked.com/Scott-Andrechek</a>"</span>,</div>
-          <div class="line">email: <span class="green-syntax">"<a href="mailto:scottandrechek@gmail.com">scottandrechek@gmail.com</a>"</span>,</div>
-        },</div>
-        <div class="line">projects: {
-          <div class="line">
-            <span class="green-syntax">
-              "<a href="https://github.com/abejfehr/justclock.in" target="_blank">Just Clock In</a>"
-            </span>: <span class="green-syntax">"A comprehensive time clock management solution"</span>,
-          </div>
-
-          <div class="line">
-            <span class="green-syntax">
-              "<a href="https://github.com/BranchofLight/Focus" target="_blank">Focus</a>"
-            </span>: <span class="green-syntax">"An AI vs AI implementation of the classic board game"</span>,
-          </div>
-
-          <div class="line">
-            <span class="green-syntax">
-              "<a href="https://chrome.google.com/webstore/detail/steam-chat-auto-scroll/bcijdddmmglcfbbekdkepcainmnnomfl?hl=en-GB" target="_blank">Steam Chat Auto Scroll</a>"
-            </span>: <span class="green-syntax">"Fixes Steam's web chat scrolling issue."</span>,
-          </div>
-
-          <div class="line">
-            <span class="green-syntax">
-              "<a href="https://github.com/BranchofLight/Chunk" target="_blank">Chunk</a>"
-            </span>: <span class="green-syntax">"A dynamic variable type for C++"</span>,
-          </div>
-
-          <div class="line">
-            <span class="green-syntax">
-              "<a href="https://github.com/BranchofLight/Profanity-Logger" target="_blank">Profanity Logger</a>"
-            </span>: <span class="green-syntax">"Captures colourful language; not passwords"</span>,
-          </div>
-
-          <div class="line">
-            <span class="green-syntax">
-              "<a href="https://github.com/BranchofLight/Time-Benders" target="_blank">Time Benders</a>"
-            </span>: <span class="green-syntax">"A 2D asteroids clone in Processing"</span>,
-          </div>
-
-          <div class="line">
-            <span class="green-syntax">
-              "<a href="https://github.com/BranchofLight/MineSweeperJS" target="_blank">MineSweeperJS</a>"
-            </span>: <span class="green-syntax">"Classic Minesweeper"</span>,
-          </div>
-
-          <div class="line">
-            other: [...<span class="light-blue-syntax"><a href="https://github.com/BranchofLight" target="_blank">more</a></span>],
-          </div>
-
-        },</div>
-      };</div>
-    </main>
+    <div class="star-map"></div>
+    <div class="container">
+      <div class="content">
+        <div class="console">
+        </div>
+      </div>
+    </div>
   </body>
-  <script>
-    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-
-    ga('create', 'UA-96007830-1', 'auto');
-    ga('send', 'pageview');
-  </script>
+  <script src="./hyphenator.js"></script>
+  <script src="./main.js"></script>
 </html>
