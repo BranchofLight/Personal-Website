@@ -63,6 +63,11 @@ body {
   padding-top: 15px;
 }
 
+.error {
+  color: #F04341;
+  font-weight: bold;
+}
+
 .value-span {
   margin-left: 0;
 

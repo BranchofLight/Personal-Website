@@ -1,9 +1,6 @@
 /**
  * TODO:
- * Make commands -> options work
- * -> Errors, successes, general(?)
  * Favicon
- * Animate console opening (optional, if necessary)
  * Screen size support
  *    -> maximum character length for commands may change
  *    -> text size
@@ -80,24 +77,52 @@ var getPad = function(padding) {
   return str;
 };
 
-// Every element is a newline
+var portfolioText = 'I am a recent Computer Science graduate of Carleton University. Playing guitar, programming and watching hockey are how I typically spend my time. You can find some of my projects and contact info below. Feel free to try out this terminal as well. Thanks for stopping by!';
+
 var siteText = [
   "> <span class=\"command\">cd</span> '.\\scott-andrechek\\'",
   "> <span class=\"command\">tail</span> 'portfolio.txt'",
-  "<span class=\"hyphenate\">I am currently a Computer Science student at Carleton University. Playing guitar, programming, board games and collecting vinyl records are how I typically spend my time. You can find some of my projects below. Feel free to try out this terminal as well. Thanks for stopping by!</span>",
+  "<span class=\"hyphenate\">" + portfolioText + "</span>",
   "> <span class=\"command\">ls</span>",
   "<span class=\"command\">Directory: root:\\scott-andrechek</span>",
   "Name                    Description",
   "----                    -----------",
-  "<a href=\"https://github.com/abejfehr/justclock.in\" class=\"link\" target=\"_blank\">Just Clock In</a>"+getPad(11)+"A comprehensive time clock management solution",
-  "<a href=\"https://github.com/BranchofLight/Focus\" class=\"link\" target=\"_blank\">Focus</a>"+getPad(19)+"AI vs AI implementation of the classic board game",
-  "<a href=\"https://chrome.google.com/webstore/detail/steam-chat-auto-scroll/bcijdddmmglcfbbekdkepcainmnnomfl?hl=en-GB\" class=\"link\" target=\"_blank\">Steam Chat Auto Scroll</a>"+getPad(2)+"Fixes Steam's web chat scrolling issue",
-  "<a href=\"https://github.com/BranchofLight/Chunk\" class=\"link\" target=\"_blank\">Chunk</a>"+getPad(19)+"A dynamic variable type for C++",
-  "<a href=\"https://github.com/BranchofLight/Profanity-Logger\" class=\"link\" target=\"_blank\">Profanity Logger</a>"+getPad(8)+"Captures colourful language; not passwords",
-  "<a href=\"https://github.com/BranchofLight\" class=\"link\" target=\"_blank\">More projects</a>"+getPad(11)+"My Github",
-  "<a href=\"mailto:scottandrechek@gmail.com\" class=\"link\" target=\"_blank\">Email Address</a>"+getPad(11)+"Contact me",
-  "<span class=\"link\">portfolio.txt</span>"+getPad(11)+"'tail' this to see my description again; try tailing other things!",
 ];
+
+var link = function(title, url, description) {
+  return {
+    'title': title,
+    'url': url,
+    'desc': description,
+  };
+};
+
+var linksList = [
+  link('Just Clock In', 'https://github.com/abejfehr/justclock.in', 'A comprehensive time clock management solution'),
+  link('Focus', 'https://github.com/BranchofLight/Focus', 'AI vs AI implementation of the classic board game'),
+  link('Steam Chat Auto Scroll', 'https://chrome.google.com/webstore/detail/steam-chat-auto-scroll/bcijdddmmglcfbbekdkepcainmnnomfl?hl=en-GB', 'Fixes Steam\'s web chat scrolling issue'),
+  link('Chunk', 'https://github.com/BranchofLight/Chunk', 'A dynamic variable type for C++'),
+  link('Profanity Logger', 'https://github.com/BranchofLight/Profanity-Logger', 'Captures colourful language; not passwords'),
+  link('More projects', 'https://github.com/BranchofLight/', 'My GitHub'),
+  link('Email address', 'mailto:scottandrechek@gmail.com', 'Contact me'),
+  link('portfolio.txt', '', '\'tail\' this to see my description again; try tailing other things!'),
+];
+
+var addLinksToSiteText = function() {
+  for (let i = 0; i < linksList.length; i++) {
+    var l = "";
+    if (linksList[i].url.length > 0) {
+      l = '<a href="' + linksList[i].url + '" target="_blank"';
+    } else {
+      l = '<span';
+    }
+
+    l += ' class="link">'
+    var padTo = 24;
+    l += linksList[i].title + ((linksList[i].url.length > 0) ? '</a>' : '</span>') + getPad(24 - linksList[i].title.length) + linksList[i].desc;
+    siteText.push(l);
+  }
+}();
 
 // Faux types text to console
 var writeTextToConsole = function(text, wrapper) {
@@ -136,9 +161,11 @@ var writeTextToConsole = function(text, wrapper) {
 };
 
 // Adds text all at once to console
-var addTextToConsole = function(text) {
+// cssClass is optional, adds to text class
+var addTextToConsole = function(text, cssClass) {
   return (new Promise(function(resolve, reject) {
     var p = document.createElement('p');
+    if (cssClass) { p.classList.add(cssClass); }
     p.classList.add('text');
     if (text.indexOf('<') >= 0) {
       p.innerHTML = text;
@@ -168,7 +195,7 @@ var writeSiteText = function(index, callback) {
         }, lineDelay);
       });
     }
-    document.querySelector('.console').scrollTop = document.querySelector('.console').scrollHeight;
+    scrollToBtm();
   } else {
     callback();
   }
@@ -191,8 +218,12 @@ var placeCaretAtEnd = function(el) {
       textRange.select();
   }
 
-  document.querySelector('.console').scrollTop = document.querySelector('.console').scrollHeight;
+  scrollToBtm();
 }
+
+var scrollToBtm = function() {
+  document.querySelector('.console').scrollTop = document.querySelector('.console').scrollHeight;
+};
 
 writeSiteText(0, function() {
   var inputDiv;
@@ -200,6 +231,8 @@ writeSiteText(0, function() {
   var usrCode = document.createElement('span');
   var commandSpan;
   var optionsSpan;
+
+  var maxInputRatio = 0.8;
 
   usrCode.classList.add('user-code');
   usrCode.setAttribute('contenteditable', true);
@@ -231,6 +264,15 @@ writeSiteText(0, function() {
     inputDiv.appendChild(symbolSpan);
     inputDiv.appendChild(commandSpan);
     inputDiv.appendChild(optionsSpan);
+
+    attachClickListener();
+  };
+
+  var attachClickListener = function() {
+    inputDiv.addEventListener('click', function(e) {
+      e.preventDefault();
+      placeCaretAtEnd(usrCode);
+    });
   };
 
   createSpans();
@@ -247,9 +289,12 @@ writeSiteText(0, function() {
       e.preventDefault();
     } else if (e.key === 'Enter') {
       e.preventDefault();
+      if ((validCommands.indexOf(usrCode.innerText) > -1 || disabledCommands.indexOf(usrCode.innerText) > -1) && optionsSpan.innerText.length === 0) {
+        commandSpan.classList.add('command');
+      }
       invokeCommand();
       positionInput();
-    } else if (symbolSpan.offsetWidth + commandSpan.offsetWidth + optionsSpan.offsetWidth >= document.querySelector('.console').offsetWidth*0.9 && e.key !== 'Backspace') {
+    } else if (symbolSpan.offsetWidth + commandSpan.offsetWidth + optionsSpan.offsetWidth >= document.querySelector('.console').offsetWidth*maxInputRatio && e.key !== 'Backspace') {
       e.preventDefault();
     } else if (spanToDraw === optionsSpan && optionsSpan.innerText.length === 0 && e.key === 'Backspace') {
       spanToDraw = commandSpan;
@@ -262,36 +307,176 @@ writeSiteText(0, function() {
     }
   });
 
-  // cat will be alias for tail
-  // sudo will ask for pw, none will work
-  // wget simply attempts to open the URL in a new tab
-  // ls prints out directory again
-  // git followed by anything opens my github
-  var validCommands = [
-    'sudo', 'tail', 'cat', 'cd', 'ls', 'wget', 'git'
+  var commandsObj = function(name, paramater, description) {
+    return {
+      'name': name,
+      'param': paramater,
+      'desc': description,
+    };
+  };
+
+  var commandsTxt = [
+    commandsObj('tail', 'My link titles, text files', 'Prints out text files and navigates to my links. Alias for \'cat\'.'),
+    commandsObj('cat', 'My link titles, text files', 'Prints out text files and navigates to my links. Alias for \'tail\'.'),
+    commandsObj('cd', 'Directories', 'Navigates to directories. No other directories exist at this time.'),
+    commandsObj('ls', 'Optional: -h', 'Prints out current directory\'s files. -h shows hidden files.'),
+    commandsObj('wget', 'External URLs', 'Navigates to specified link in a new tab.'),
+    commandsObj('git', 'None', 'Navigates to my GitHub.'),
+    commandsObj('man', 'Commands', 'Prints out description of specified command.'),
   ];
+
+  var validCommands = function() {
+    var arr = [];
+    for (let i = 0; i < commandsTxt.length; i++) {
+      arr.push(commandsTxt[i].name);
+    }
+
+    return arr;
+  }();
+
   // These commands are valid, but throw an error
   var disabledCommands = [
-    'rm', 'mkdir', 'ssh', 'mount', 'unmount'
+    'rm', 'mkdir', 'ssh', 'mount', 'unmount', 'sudo'
   ];
 
-  // Do commands (if any)
-  // Flush spans
-  // New line
   var invokeCommand = function() {
-    var c = document.querySelector('.console');
-    c.appendChild(document.createElement('br'));
-    createSpans();
+    var input = usrCode.innerText;
+    var command = input.split(' ')[0];
+    var options = input.substring(input.indexOf(command) + command.length + 1);
 
-    c.appendChild(inputDiv);
+    var newLine = function() {
+      var c = document.querySelector('.console');
+      c.appendChild(document.createElement('br'));
+      createSpans();
 
-    document.querySelector('.console').scrollTop = document.querySelector('.console').scrollHeight;
+      c.appendChild(inputDiv);
 
-    spanToDraw = commandSpan;
+      scrollToBtm();
 
-    usrCode.innerText = "";
+      spanToDraw = commandSpan;
 
-    positionInput();
+      usrCode.innerText = "";
+
+      positionInput();
+    };
+
+    if (validCommands.indexOf(command) > -1) {
+      if (command === 'tail' || command === 'cat') {
+        if (options === 'commands.txt') {
+          // Calculations for padding
+          var longestName = 0;
+          var longestParam = 0;
+          for (let i = 0; i < commandsTxt.length; i++) {
+            if (commandsTxt[i].name.length > longestName) {
+              longestName = commandsTxt[i].name.length;
+            }
+            if (commandsTxt[i].param.length > longestParam) {
+              longestParam = commandsTxt[i].param.length;
+            }
+          }
+          var writeCommandsTxt = function(index, callback) {
+            if (index < commandsTxt.length) {
+              var n = '<span class="command">' + commandsTxt[index].name + '</span>';
+              var p = getPad(longestName+1-commandsTxt[index].name.length) + '<span class="link">' + commandsTxt[index].param + '</span>';
+              var d = getPad(longestParam+1-commandsTxt[index].param.length) + '<span class="text">' + commandsTxt[index].desc + '</span>';
+              addTextToConsole(n + p + d)
+              .then(function() {
+                scrollToBtm();
+                setTimeout(function() {
+                  writeCommandsTxt(index+1, callback);
+                }, lineDelay);
+              });
+            } else {
+              callback();
+            }
+          }
+
+          writeCommandsTxt(0, newLine);
+        } else if (options === 'portfolio.txt') {
+          addTextToConsole('<span class=\"hyphenate\">' + portfolioText + '</span>');
+          newLine();
+        } else {
+          var url = "";
+          for (let i = 0; i < linksList.length; i++) {
+            if (linksList[i].title.toLowerCase() === options.toLowerCase()) {
+              url = linksList[i].url;
+            }
+          }
+
+          // Handle email separately
+          if (url.length > 0 && url.indexOf('mailto:') < 0) {
+            newLine();
+            document.querySelector('a[href="' + url + '"]').click();
+          } else if (url.indexOf('mailto:') > -1) {
+            addTextToConsole(url.substring('mailto:'.length));
+            newLine();
+          }
+        }
+      } else if (command === 'git') {
+        newLine();
+        document.querySelector('a[href="https://github.com/BranchofLight/"]').click();
+      } else if (command === 'ls') {
+        if (options === '-h') {
+          var output = [
+            "<span class=\"command\">Directory: root:\\scott-andrechek</span>",
+            "Name                    Description",
+            "----                    -----------",
+            "<span class=\"link\">commands.txt</span>" + getPad(24-"commands.txt".length) + "A hidden list of all commands",
+          ];
+          for (let i = 0; i < output.length; i++) {
+            addTextToConsole(output[i]);
+          }
+          newLine();
+        } else {
+          caret.style.visibility = 'hidden';
+          writeSiteText(4, newLine);
+        }
+      } else if (command === 'cd') {
+        addTextToConsole('Cannot find path \'' + options + '\' because it does not exist.', 'error');
+        newLine();
+      } else if (command === 'wget') {
+        if (options.length === 0) {
+          addTextToConsole('No URL specified.', 'error');
+          newLine();
+        } else if (options.substring(0, 7) !== 'http://' && options.substring(0, 8) !== 'https://') {
+          addTextToConsole('Please add either \'http://\' or \https://\' to the beginning of the link');
+          newLine();
+        } else {
+          addTextToConsole('Navigating to \'' + options + '\'');
+          var dummy = document.createElement('a');
+          dummy.target = '_blank';
+          dummy.href = options;
+          dummy.click();
+          newLine();
+        }
+      } else if (command === 'man') {
+        var isValid = false;
+        for (let i = 0; i < commandsTxt.length; i++) {
+          if (options === commandsTxt[i].name) {
+            isValid = true;
+            var n = '<span class="command">' + commandsTxt[i].name + '</span>';
+            var p = getPad(2) + '<span class="link">' + commandsTxt[i].param + '</span>';
+            var d = getPad(2) + '<span class="text">' + commandsTxt[i].desc + '</span>';
+            addTextToConsole(n + p + d);
+            break;
+          }
+        }
+        if (!isValid) {
+          addTextToConsole('Unknown command \'' + options + '\'', 'error');
+        }
+
+        newLine();
+      }
+    } else if (disabledCommands.indexOf(command) > -1) {
+      addTextToConsole('Sorry, you do not have permission to use \'' + command + '\'.', 'error');
+
+      scrollToBtm();
+
+      newLine();
+    } else {
+      addTextToConsole('Unknown command \'' + usrCode.innerText + '\'', 'error');
+      newLine();
+    }
   };
 
   // Create our custom caret
@@ -332,10 +517,6 @@ writeSiteText(0, function() {
     e.preventDefault();
     placeCaretAtEnd(usrCode);
   });
-  document.querySelector('.console').addEventListener('click', function(e) {
-    e.preventDefault();
-    placeCaretAtEnd(usrCode);
-  });
 
   document.querySelector('.console').appendChild(inputDiv);
   document.querySelector('.console').appendChild(usrCode);
@@ -355,10 +536,10 @@ writeSiteText(0, function() {
     caret.style.left = rect.right + "px";
   };
 
-  document.querySelector('.console').scrollTop = document.querySelector('.console').scrollHeight;
+  scrollToBtm();
 
   resizeFunctions.push(function() {
-    while (symbolSpan.offsetWidth + commandSpan.offsetWidth + optionsSpan.offsetWidth >= document.querySelector('.console').offsetWidth*0.9) {
+    while (symbolSpan.offsetWidth + commandSpan.offsetWidth + optionsSpan.offsetWidth >= document.querySelector('.console').offsetWidth*maxInputRatio) {
       usrCode.innerText = usrCode.innerText.substring(0, usrCode.innerText.length-1);
       if (optionsSpan.innerText.length > 0) {
         optionsSpan.innerText = optionsSpan.innerText.substring(0, optionsSpan.innerText.length-1);
@@ -369,9 +550,11 @@ writeSiteText(0, function() {
   });
 
   var caretScrollCheck = function() {
-    var scrollMax = document.querySelector('.console').scrollHeight - document.querySelector('.console').offsetHeight;
+    var c = document.querySelector('.console');
+    var scrollMax = c.scrollHeight - c.offsetHeight;
     // parseInt rounds down -- still need the negative padding on scroll max
-    if (parseInt(document.querySelector('.console').scrollTop) >= scrollMax*0.98) {
+    // Also makes sure that the last element is indeed an input
+    if (parseInt(c.scrollTop) >= scrollMax*0.98 && c.children[c.children.length-1].nodeName === 'DIV') {
       caret.style.visibility = "visible";
       placeCaretAtEnd(usrCode);
       positionInput();
