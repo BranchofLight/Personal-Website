@@ -410,6 +410,9 @@ writeSiteText(0, function() {
           } else if (url.indexOf('mailto:') > -1) {
             addTextToConsole(url.substring('mailto:'.length));
             newLine();
+          } else {
+            addTextToConsole('Cannot \'' + command + '\' \'' + options + '\'', 'error');
+            newLine();
           }
         }
       } else if (command === 'git') {
