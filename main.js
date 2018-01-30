@@ -322,6 +322,7 @@ writeSiteText(0, function() {
     commandsObj('wget', 'External URLs', 'Navigates to specified link in a new tab.'),
     commandsObj('git', 'None', 'Navigates to my GitHub.'),
     commandsObj('man', 'Commands', 'Prints out description of specified command.'),
+    commandsObj('exit', 'None', 'Closes this terminal.'),
   ];
 
   var validCommands = function() {
@@ -468,6 +469,23 @@ writeSiteText(0, function() {
         }
 
         newLine();
+      } else if (command === 'exit') {
+        var fadeOut = function(el, timeToFade, steps, stepsLeft) {
+          if (stepsLeft === undefined) stepsLeft = steps;
+          if (el.style.opacity.length === 0) {
+            el.style.opacity = 1;
+          }
+          el.style.opacity = parseFloat(el.style.opacity) - (1/steps);
+          if (stepsLeft-1 === 0) {
+            el.style.opacity = 0;
+            el.remove();
+          }
+          setTimeout(function() {
+            fadeOut(el, timeToFade, steps, stepsLeft-1);
+          }, timeToFade / steps);
+        };
+
+        fadeOut(document.querySelector('.console'), 2500, 50);
       }
     } else if (disabledCommands.indexOf(command) > -1) {
       addTextToConsole('Sorry, you do not have permission to use \'' + command + '\'.', 'error');
