@@ -9,8 +9,6 @@ var starMap = document.querySelector('.star-map');
 var resizeFunctions = []; // Calls all these on window resize
 
 var createStars = function() {
-  console.log("Creating stars.");
-
   // Calculates maximum diamater for the star map (circle) to fit the viewport (rectangle)
   var diagnol = Math.sqrt((document.body.offsetWidth**2) + (document.body.offsetHeight**2));
   diagnol = Math.round(diagnol) + Math.round(diagnol*0.1); // Requires some padding
@@ -283,7 +281,6 @@ writeSiteText(0, function() {
   ];
 
   usrCode.addEventListener('keydown', function(e) {
-    console.log(usrCode.innerText);
     if (invalidKeys.indexOf(e.key) > -1) {
       e.preventDefault();
     } else if (e.key === 'Enter') {
