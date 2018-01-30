@@ -1,6 +1,5 @@
 /**
  * TODO:
- * Favicon
  * Screen size support
  *    -> maximum character length for commands may change
  *    -> text size
@@ -441,7 +440,7 @@ writeSiteText(0, function() {
         if (options.length === 0) {
           addTextToConsole('No URL specified.', 'error');
           newLine();
-        } else if (options.substring(0, 7) !== 'http://' && options.substring(0, 8) !== 'https://') {
+        } else if (options.substring(0, 7) !== 'http://' && options.substring(0, 8) !== '\'https://') {
           addTextToConsole('Please add either \'http://\' or \https://\' to the beginning of the link');
           newLine();
         } else {
