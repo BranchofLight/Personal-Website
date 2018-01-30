@@ -303,12 +303,12 @@ writeSiteText(0, function() {
     } else if (e.key === 'Enter') {
       e.preventDefault();
 
-      if (commandSpan.innerText.length > 0) {
+      if (usrCode.innerText.length > 0) {
         ga('send', {
           hitType: 'event',
-          eventCategory: 'Command',
+          eventCategory: 'Input',
           eventAction: 'EnterKey',
-          eventLabel: commandSpan.innerText,
+          eventLabel: usrCode.innerText,
         });
       }
 
