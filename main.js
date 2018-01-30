@@ -23,10 +23,10 @@ var createStars = function() {
     starMap.innerHTML = "";
   }
 
-  var stars = Math.round((diagnol**2)/3000);
+  var stars = Math.round(diagnol/4);
   // Arbitrary limits for performance
-  if (stars > 6000) {
-    stars = 5000;
+  if (stars > 1500) {
+    stars = 1500;
   } else if (stars < 100) {
     stars = 100;
   }
