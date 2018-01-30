@@ -303,12 +303,23 @@ writeSiteText(0, function() {
     } else if (e.key === 'Enter') {
       e.preventDefault();
 
+      // Check to see how people are using commands and options
       if (usrCode.innerText.length > 0) {
         ga('send', {
           hitType: 'event',
           eventCategory: 'Input',
           eventAction: 'EnterKey',
           eventLabel: usrCode.innerText,
+        });
+      }
+
+      // Allows easier tracking for what commands people are trying
+      if (commandSpan.innerText.length > 0) {
+        ga('send', {
+          hitType: 'event',
+          eventCategory: 'Command',
+          eventAction: 'EnterKey',
+          eventLabel: commandSpan.innerText,
         });
       }
 
