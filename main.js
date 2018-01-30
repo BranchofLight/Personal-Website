@@ -1,55 +1,72 @@
 /**
  * TODO:
- * Screen size support
- *    -> maximum character length for commands may change
- *    -> text size
- *    -> console size
  */
-var starMap = document.querySelector('.star-map');
 var resizeFunctions = []; // Calls all these on window resize
 
-var createStars = function() {
-  // Calculates maximum diamater for the star map (circle) to fit the viewport (rectangle)
-  var diagnol = Math.sqrt((document.body.offsetWidth**2) + (document.body.offsetHeight**2));
-  diagnol = Math.round(diagnol) + Math.round(diagnol*0.1); // Requires some padding
-  starMap.style.width = diagnol + "px";
-  starMap.style.height = diagnol + "px";
+var canvas = document.querySelector('canvas');
+var ctx = canvas.getContext('2d');
+var stars = [];
 
-  starMap.style.left = -1 * ((diagnol/2) - (document.body.offsetWidth/2)) + "px";
-  starMap.style.top = -1 * ((diagnol/2) - (document.body.offsetHeight/2)) + "px";
+var calcDimensions = function() {
+  // canvas.style.width = document.body.offsetWidth + "px";
+  // canvas.style.height = document.body.offsetHeight + "px";
+  canvas.setAttribute('width', document.body.offsetWidth);
+  canvas.setAttribute('height', document.body.offsetHeight);
 
-  // Resets stars
-  if (starMap.childNodes.length > 0) {
-    starMap.innerHTML = "";
-  }
-
-  var stars = Math.round(diagnol/4);
-  // Arbitrary limits for performance
-  if (stars > 1500) {
-    stars = 1500;
-  } else if (stars < 100) {
-    stars = 100;
-  }
-
-  for (let i = 0; i < stars; i++) {
-  	var rPrime = Math.random() * ((diagnol/2)**2);
-  	var theta  = Math.random() * (Math.PI*2);
-    var x = Math.sqrt(rPrime)*Math.cos(theta);
-    var y = Math.sqrt(rPrime)*Math.sin(theta);
-    var p = document.createElement('p');
-    p.innerText = ".";
-    p.classList.add('star');
-    p.classList.add('no-select');
-    // Generates animation tag with random length and random delay
-    p.style.animation = "sparkle " + Math.round(Math.random()*(10000-4000)+4000) + "ms linear " + Math.round(Math.random()*5) + "s infinite";
-    p.style.top = y + diagnol/2-25 + "px";
-    p.style.left = x + diagnol/2 + "px";
-    starMap.appendChild(p);
+  if (stars.length > 0) {
+    stars = [];
+    init();
   }
 };
 
-createStars();
-resizeFunctions.push(createStars);
+calcDimensions();
+
+var clear = function() {
+  ctx.fillStyle = '#051121';
+  ctx.fillRect(0, 0, canvas.getAttribute('width'), canvas.getAttribute('height'));
+};
+
+var init = function() {
+  var h = canvas.getAttribute('height');
+  var w = canvas.getAttribute('width');
+  for (let i = 0; i < h*w/100; ++i) {
+    stars.push({
+      distance: Math.random() * Math.sqrt((w / 2) ** 2 + (h / 2) ** 2),
+      angle: Math.random() * 2 * Math.PI,
+      opacity: Math.random(),
+    });
+  };
+
+  clear();
+};
+
+var step = function(timestamp) {
+  clear();
+
+  var h = canvas.getAttribute('height');
+  var w = canvas.getAttribute('width');
+  var starSpeed = 0.01;
+  for (let i = 0; i < stars.length; ++i) {
+    const center = {
+      x: w / 2,
+      y: h / 2,
+    };
+
+    const x = center.x + Math.cos(stars[i].angle + timestamp * starSpeed / 1000) * stars[i].distance;
+    const y = center.y + Math.sin(stars[i].angle + timestamp * starSpeed / 1000) * stars[i].distance;
+
+    const o = stars[i].opacity;
+    ctx.fillStyle = `rgba(225, 225, 225, ${(Math.sin(stars[i].opacity * timestamp / 500) + 1) / 2})`;
+    ctx.fillRect(x, y, 1, 1);
+  }
+
+  window.requestAnimationFrame(step);
+};
+
+init();
+
+window.requestAnimationFrame(step);
+resizeFunctions.push(calcDimensions);
 
 window.onresize = function() {
   for (let i = 0; i < resizeFunctions.length; i++) {
@@ -294,7 +311,7 @@ writeSiteText(0, function() {
           eventLabel: commandSpan.innerText,
         });
       }
-      
+
       if ((validCommands.indexOf(usrCode.innerText) > -1 || disabledCommands.indexOf(usrCode.innerText) > -1) && optionsSpan.innerText.length === 0) {
         commandSpan.classList.add('command');
       }
