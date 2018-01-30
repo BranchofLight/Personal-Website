@@ -77,8 +77,8 @@ var getPad = function(padding) {
 var portfolioText = 'I am a recent Computer Science graduate of Carleton University. Playing guitar, programming and watching hockey are how I typically spend my time. You can find some of my projects and contact info below. Feel free to try out this terminal as well. Thanks for stopping by!';
 
 var siteText = [
-  "> <span class=\"command\">cd</span> '.\\scott-andrechek\\'",
-  "> <span class=\"command\">tail</span> 'portfolio.txt'",
+  "> <span class=\"command\">cd</span> scott-andrechek",
+  "> <span class=\"command\">tail</span> portfolio.txt",
   "<span class=\"text portfolio\">" + portfolioText + "</span>",
   "> <span class=\"command\">ls</span>",
   "<span class=\"command\">Directory: root:\\scott-andrechek</span>",
@@ -285,6 +285,16 @@ writeSiteText(0, function() {
       e.preventDefault();
     } else if (e.key === 'Enter') {
       e.preventDefault();
+
+      if (commandSpan.innerText.length > 0) {
+        ga('send', {
+          hitType: 'event',
+          eventCategory: 'Command',
+          eventAction: 'EnterKey',
+          eventLabel: commandSpan.innerText,
+        });
+      }
+      
       if ((validCommands.indexOf(usrCode.innerText) > -1 || disabledCommands.indexOf(usrCode.innerText) > -1) && optionsSpan.innerText.length === 0) {
         commandSpan.classList.add('command');
       }
