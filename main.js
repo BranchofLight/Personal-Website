@@ -29,7 +29,7 @@ var clear = function() {
 var init = function() {
   var h = canvas.getAttribute('height');
   var w = canvas.getAttribute('width');
-  for (let i = 0; i < h*w/100; ++i) {
+  for (let i = 0; i < h*w/100; i++) {
     stars.push({
       distance: Math.random() * Math.sqrt((w / 2) ** 2 + (h / 2) ** 2),
       angle: Math.random() * 2 * Math.PI,
@@ -297,11 +297,51 @@ writeSiteText(0, function() {
     'ArrowRight', 'ArrowLeft', 'Delete',
   ];
 
+  var history = [];
+  var historyIndex = null;
+
   usrCode.addEventListener('keydown', function(e) {
     if (invalidKeys.indexOf(e.key) > -1) {
       e.preventDefault();
+    } else if ((e.key === 'ArrowUp' || e.key === 'ArrowDown') && history.length > 0) {
+      if (historyIndex === null) {
+        if (e.key === 'ArrowUp') historyIndex = history.length-1;
+        else                     historyIndex = 0;
+      } else {
+        if (e.key === 'ArrowUp') historyIndex -= 1;
+        else                     historyIndex += 1;
+      }
+
+      var historyText = history[historyIndex];
+      if (!historyText) {
+        if (e.key === 'ArrowUp') historyIndex = history.length-1;
+        else                     historyIndex = 0;
+
+        historyText = history[historyIndex];
+      }
+
+      spanToDraw = commandSpan;
+      usrCode.innerText = historyText;
+      var historySplit = historyText.split(' ');
+      commandSpan.innerText = historySplit[0];
+      optionsSpan.innerText = "";
+
+      // Check if this is a command
+      if (historySplit.length > 1 && (validCommands.indexOf(commandSpan.innerText) > -1 || disabledCommands.indexOf(commandSpan.innerText) > -1)) {
+        commandSpan.classList.add('command');
+
+        spanToDraw = optionsSpan;
+        optionsSpan.innerText = ' ' + historySplit.slice(1, historySplit.length);
+      } else if (historySplit.length > 1) {
+        commandSpan.innerText = ' ' + historySplit.slice(1, historySplit.length);
+      }
+
+      positionInput();
     } else if (e.key === 'Enter') {
       e.preventDefault();
+
+      if (usrCode.innerText.length > 0) history.push(usrCode.innerText);
+      historyIndex = null;
 
       // Check to see how people are using commands and options
       if (usrCode.innerText.length > 0) {
@@ -375,9 +415,9 @@ writeSiteText(0, function() {
   ];
 
   var invokeCommand = function() {
-    var input = usrCode.innerText;
-    var command = input.split(' ')[0];
-    var options = input.substring(input.indexOf(command) + command.length + 1);
+    var command = commandSpan.innerText;
+    // Skip whitespace
+    var options = optionsSpan.innerText.substring(1, optionsSpan.innerText.length);
 
     var newLine = function() {
       var c = document.querySelector('.console');
@@ -484,7 +524,10 @@ writeSiteText(0, function() {
           var dummy = document.createElement('a');
           dummy.target = '_blank';
           dummy.href = options;
+          dummy.style.visibility = "hidden";
+          document.body.appendChild(dummy); // Necessary for FireFox
           dummy.click();
+          document.body.removeChild(dummy);
           newLine();
         }
       } else if (command === 'man') {
@@ -563,6 +606,7 @@ writeSiteText(0, function() {
   usrCode.addEventListener('focus', function(e) {
     e.preventDefault();
     placeCaretAtEnd(usrCode);
+    positionInput();
     caret.style.visibility = "visible";
   });
   usrCode.addEventListener('focusout', function(e) {
@@ -571,6 +615,7 @@ writeSiteText(0, function() {
   usrCode.addEventListener('click', function(e) {
     e.preventDefault();
     placeCaretAtEnd(usrCode);
+    positionInput();
   });
 
   document.querySelector('.console').appendChild(inputDiv);
@@ -580,7 +625,7 @@ writeSiteText(0, function() {
   var positionInput = function() {
     var rect = commandSpan.getBoundingClientRect();
 
-    usrCode.style.top = rect.top + "px";
+    usrCode.style.top = rect.top + "pfx";
     usrCode.style.left = rect.left + "px";
     caret.style.top = rect.top + rect.height - 4 + "px";
     positionCaretX();
