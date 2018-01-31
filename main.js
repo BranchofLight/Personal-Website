@@ -304,6 +304,8 @@ writeSiteText(0, function() {
     if (invalidKeys.indexOf(e.key) > -1) {
       e.preventDefault();
     } else if ((e.key === 'ArrowUp' || e.key === 'ArrowDown') && history.length > 0) {
+      e.preventDefault();
+
       if (historyIndex === null) {
         if (e.key === 'ArrowUp') historyIndex = history.length-1;
         else                     historyIndex = 0;
@@ -324,6 +326,7 @@ writeSiteText(0, function() {
       usrCode.innerText = historyText;
       var historySplit = historyText.split(' ');
       commandSpan.innerText = historySplit[0];
+      commandSpan.classList.remove('command');
       optionsSpan.innerText = "";
 
       // Check if this is a command
@@ -331,11 +334,12 @@ writeSiteText(0, function() {
         commandSpan.classList.add('command');
 
         spanToDraw = optionsSpan;
-        optionsSpan.innerText = ' ' + historySplit.slice(1, historySplit.length);
+        optionsSpan.innerHTML = '&nbsp;' + historySplit.slice(1, historySplit.length);
       } else if (historySplit.length > 1) {
-        commandSpan.innerText = ' ' + historySplit.slice(1, historySplit.length);
+        commandSpan.innerHTML = '&nbsp;' + historySplit.slice(1, historySplit.length);
       }
 
+      placeCaretAtEnd(usrCode);
       positionInput();
     } else if (e.key === 'Enter') {
       e.preventDefault();
