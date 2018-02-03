@@ -8,8 +8,6 @@ var ctx = canvas.getContext('2d');
 var stars = [];
 
 var calcDimensions = function() {
-  // canvas.style.width = document.body.offsetWidth + "px";
-  // canvas.style.height = document.body.offsetHeight + "px";
   canvas.setAttribute('width', document.body.offsetWidth);
   canvas.setAttribute('height', document.body.offsetHeight);
 
@@ -29,7 +27,7 @@ var clear = function() {
 var init = function() {
   var h = canvas.getAttribute('height');
   var w = canvas.getAttribute('width');
-  for (let i = 0; i < h*w/100; i++) {
+  for (let i = 0; i < h*w/500; i++) {
     stars.push({
       distance: Math.random() * Math.sqrt((w / 2) ** 2 + (h / 2) ** 2),
       angle: Math.random() * 2 * Math.PI,
@@ -47,7 +45,7 @@ var step = function(timestamp) {
   var w = canvas.getAttribute('width');
   var starSpeed = 0.01;
   for (let i = 0; i < stars.length; ++i) {
-    const center = {
+    var center = {
       x: w / 2,
       y: h / 2,
     };
