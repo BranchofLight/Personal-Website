@@ -395,7 +395,7 @@ writeSiteText(0, function() {
     commandsObj('tail', 'My link titles, text files', 'Prints out text files and navigates to my links. Alias for \'cat\'.'),
     commandsObj('cat', 'My link titles, text files', 'Prints out text files and navigates to my links. Alias for \'tail\'.'),
     commandsObj('cd', 'Directories', 'Navigates to directories. No other directories exist at this time.'),
-    commandsObj('ls', 'Optional: -h', 'Prints out current directory\'s files. -h shows hidden files.'),
+    commandsObj('ls', 'Optional: -h or -a', 'Prints out current directory\'s files. -h and -a shows hidden files.'),
     commandsObj('wget', 'External URLs', 'Navigates to specified link in a new tab.'),
     commandsObj('git', 'None', 'Navigates to my GitHub.'),
     commandsObj('man', 'Commands', 'Prints out description of specified command.'),
@@ -496,7 +496,7 @@ writeSiteText(0, function() {
         newLine();
         document.querySelector('a[href="https://github.com/BranchofLight/"]').click();
       } else if (command === 'ls') {
-        if (options === '-h') {
+        if (options === '-h' || options === '-a') {
           var output = [
             "<span class=\"command\">Directory: root:\\scott-andrechek</span>",
             "Name                    Description",
@@ -507,7 +507,10 @@ writeSiteText(0, function() {
             addTextToConsole(output[i]);
           }
           newLine();
-        } else {
+        } else if (options.length > 0) {
+          addTextToConsole('\'ls\' does not support ' + options, 'error');
+          newLine();
+        } else if (options.length === 0) {
           caret.style.visibility = 'hidden';
           writeSiteText(4, newLine);
         }
