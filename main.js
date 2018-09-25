@@ -89,7 +89,7 @@ var getPad = function(padding) {
   return str;
 };
 
-var portfolioText = 'I work on Kids Products at CBC Digital. Playing guitar, programming and watching hockey are how I typically spend my time. You can find some of my projects and contact info below. Feel free to try out this terminal as well. Thanks for stopping by!';
+var portfolioText = 'I work on the Kids Platform Team at CBC. Playing guitar, programming and watching hockey are how I typically spend my time. You can find some of my projects and contact info below. Feel free to try out this terminal as well. Thanks for stopping by!';
 
 var siteText = [
   "> <span class=\"command\">cd</span> scott-andrechek",
